@@ -8,6 +8,9 @@ class Cross extends StatefulWidget {
 }
 
 class _CrossState extends State<Cross> {
+  /// 图片路径
+  static const String imageDir = 'assets/';
+
   /// 元素大小
   static const double boxSize = 80.0;
   static const double space = 3.0;
@@ -36,6 +39,7 @@ class _CrossState extends State<Cross> {
         backgroundColor: Colors.black87,
       ),
       body: Container(
+        color: Colors.black87,
         constraints: BoxConstraints.expand(),
         child: Stack(
           alignment: Alignment.center,
@@ -92,11 +96,9 @@ class _CrossState extends State<Cross> {
   /// 每一个Draggable COLUMN 包在一个DragTarget里面
   Widget _buildColumnTarget(int index, int shade) {
     return DragTarget<double>(
-      builder: (
-        BuildContext context,
-        List<dynamic> accepted,
-        List<dynamic> rejected,
-      ) {
+      builder: (BuildContext context,
+          List<dynamic> accepted,
+          List<dynamic> rejected,) {
         // 不是当前正在显示的COLUMN的话，返回原列大小的Container
         if (index != _columnIndex) {
           return Container(
@@ -126,11 +128,9 @@ class _CrossState extends State<Cross> {
   /// 每一个Draggable ROW 包在一个DragTarget里面
   Widget _buildRowTarget(int index, MaterialColor color) {
     return DragTarget<int>(
-      builder: (
-        BuildContext context,
-        List<dynamic> accepted,
-        List<dynamic> rejected,
-      ) {
+      builder: (BuildContext context,
+          List<dynamic> accepted,
+          List<dynamic> rejected,) {
         // 不是当前正在显示的ROW的话，返回原行大小的Container
         if (index != _rowIndex) {
           return Container(
@@ -213,7 +213,7 @@ class _CrossState extends State<Cross> {
     }
     return Container(
       constraints: BoxConstraints(maxHeight: columnHeight),
-      color: Colors.white,
+      // color: const Color.fromRGBO(255, 255, 255, 0),
       child: Column(
         children: column,
       ),
@@ -224,17 +224,22 @@ class _CrossState extends State<Cross> {
   Widget _buildRow(MaterialColor color) {
     List<Widget> row = [];
     Widget widget;
-    Widget boxChild = Container();
 
     for (int i = 0; i < rowElement; i++) {
       // 非相交点 => 返回正常的box
       if (i != _columnIndex) {
         widget = Container(
+          decoration: BoxDecoration(
+            // color: color[(i + 1) * 100],
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+          ),
           margin: EdgeInsets.all(space),
           width: boxSize,
           height: boxSize,
-          color: color[(i + 1) * 100],
-          // child: _buildText((i + 1).toString()),
+          // color: color[(i + 1) * 100],
+          // TODO: IMAGE
+          child: _buildImage(i + 1),
         );
       } else {
         // 相交点：通过column index判断 => 返回手势检测
@@ -243,24 +248,23 @@ class _CrossState extends State<Cross> {
             decoration: BoxDecoration(
               border: Border.all(color: Colors.black, width: 2),
               color: color[(i + 1) * 100],
+              // borderRadius: BorderRadiusGeometry
             ),
             margin: EdgeInsets.all(space),
             width: boxSize,
             height: boxSize,
-            child: boxChild,
+            child: _buildImage(i + 1),
           ),
           onTap: () {
             log('Box selected!');
-            setState(() {
-              boxChild = _buildText((i + 1).toString());
-            });
+            setState(() {});
           },
         );
       }
       row.add(widget);
     }
     return Container(
-      color: Colors.white,
+      // color: const Color.fromRGBO(255, 255, 255, 0),
       constraints: BoxConstraints(maxWidth: rowWidth),
       child: Row(
         children: row,
@@ -268,12 +272,16 @@ class _CrossState extends State<Cross> {
     );
   }
 
-  /// 文字的样式，后面可去掉
-  Widget _buildText(String text) {
+  Widget _buildImage(int index) {
     return Center(
-      child: Text(
-        text,
-        style: TextStyle(fontSize: 30),
+      child: ClipOval(
+        child: Image.asset(
+          imageDir + index.toString() + '.jpeg',
+          color: const Color.fromRGBO(23, 158, 151, 1.0),
+          colorBlendMode: BlendMode.modulate,
+          height: 70,
+          width: 70,
+        ),
       ),
     );
   }
