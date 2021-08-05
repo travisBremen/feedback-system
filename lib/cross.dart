@@ -12,9 +12,11 @@ class _CrossState extends State<Cross> {
   static const String imageDir = 'assets/';
 
   /// 元素大小
-  static const double boxSize = 80.0;
+  static const double boxSize = 100.0;
   static const double space = 3.0;
   static const double fullBoxSize = boxSize + space * 2;
+
+  static const double imageSize = boxSize - 20;
 
   /// 行、列元素个数
   static const int columnElement = 5;
@@ -59,7 +61,7 @@ class _CrossState extends State<Cross> {
       columnTargets.add(Positioned(
         left: fullBoxSize * i,
         top: 0,
-        child: _buildColumnTarget(i, (i + 1) * 100),
+        child: _buildColumnTarget(i),
       ));
     }
     return columnTargets;
@@ -68,37 +70,24 @@ class _CrossState extends State<Cross> {
   /// 行：总共有5行，5个DragTarget
   List<Widget> _buildRowTargets() {
     List<Widget> rowTargets = [];
-    MaterialColor color = Colors.red;
     for (int i = 0; i < columnElement; i++) {
-      switch (i) {
-        case 1:
-          color = Colors.green;
-          break;
-        case 2:
-          color = Colors.blue;
-          break;
-        case 3:
-          color = Colors.yellow;
-          break;
-        case 4:
-          color = Colors.purple;
-          break;
-      }
       rowTargets.add(Positioned(
         left: 0,
         top: fullBoxSize * i,
-        child: _buildRowTarget(i, color),
+        child: _buildRowTarget(i),
       ));
     }
     return rowTargets;
   }
 
   /// 每一个Draggable COLUMN 包在一个DragTarget里面
-  Widget _buildColumnTarget(int index, int shade) {
+  Widget _buildColumnTarget(int index) {
     return DragTarget<double>(
-      builder: (BuildContext context,
-          List<dynamic> accepted,
-          List<dynamic> rejected,) {
+      builder: (
+        BuildContext context,
+        List<dynamic> accepted,
+        List<dynamic> rejected,
+      ) {
         // 不是当前正在显示的COLUMN的话，返回原列大小的Container
         if (index != _columnIndex) {
           return Container(
@@ -106,7 +95,7 @@ class _CrossState extends State<Cross> {
             width: fullBoxSize,
           );
         }
-        return _buildDraggableColumn(shade);
+        return _buildDraggableColumn(index);
       },
       onWillAccept: (data) => true,
       onAccept: (data) {
@@ -126,11 +115,13 @@ class _CrossState extends State<Cross> {
   }
 
   /// 每一个Draggable ROW 包在一个DragTarget里面
-  Widget _buildRowTarget(int index, MaterialColor color) {
+  Widget _buildRowTarget(int index) {
     return DragTarget<int>(
-      builder: (BuildContext context,
-          List<dynamic> accepted,
-          List<dynamic> rejected,) {
+      builder: (
+        BuildContext context,
+        List<dynamic> accepted,
+        List<dynamic> rejected,
+      ) {
         // 不是当前正在显示的ROW的话，返回原行大小的Container
         if (index != _rowIndex) {
           return Container(
@@ -138,7 +129,7 @@ class _CrossState extends State<Cross> {
             width: rowWidth,
           );
         }
-        return _buildDraggableRow(color);
+        return _buildDraggableRow(index);
       },
       onWillAccept: (data) => true,
       onAccept: (data) {
@@ -158,58 +149,34 @@ class _CrossState extends State<Cross> {
   }
 
   /// 每一列包在一个Draggable里面
-  Widget _buildDraggableColumn(int shade) {
+  Widget _buildDraggableColumn(int columnIndex) {
     return Draggable<double>(
       // Data is the value this Draggable stores.
       data: 10,
       axis: Axis.horizontal,
-      child: _buildColumn(shade),
-      feedback: Material(child: _buildColumn(shade)),
+      child: _buildColumn(columnIndex),
+      feedback: Material(child: _buildColumn(columnIndex)),
       childWhenDragging: Container(),
     );
   }
 
   /// 每一行包在一个Draggable里面
-  Widget _buildDraggableRow(MaterialColor color) {
+  Widget _buildDraggableRow(int rowIndex) {
     return Draggable<int>(
       // Data is the value this Draggable stores.
       data: 10,
       axis: Axis.vertical,
-      child: _buildRow(color),
-      feedback: Material(child: _buildRow(color)),
+      child: _buildRow(rowIndex),
+      feedback: Material(child: _buildRow(rowIndex)),
       childWhenDragging: Container(),
     );
   }
 
   /// 一列，5个（行）元素
-  Widget _buildColumn(int shade) {
+  Widget _buildColumn(int columnIndex) {
     List<Widget> column = [];
-    Color color = Colors.red[shade]!;
-
     for (int i = 0; i < columnElement; i++) {
-      switch (i) {
-        case 1:
-          color = Colors.green[shade]!;
-          break;
-        case 2:
-          color = Colors.blue[shade]!;
-          break;
-        case 3:
-          color = Colors.yellow[shade]!;
-          break;
-        case 4:
-          color = Colors.purple[shade]!;
-          break;
-      }
-      column.add(
-        Container(
-          margin: EdgeInsets.all(space),
-          width: boxSize,
-          height: boxSize,
-          color: color,
-          // child: _buildText((i + 1).toString()),
-        ),
-      );
+      column.add(_buildBox(i, columnIndex));
     }
     return Container(
       constraints: BoxConstraints(maxHeight: columnHeight),
@@ -221,39 +188,26 @@ class _CrossState extends State<Cross> {
   }
 
   /// 一行，3个（列）元素
-  Widget _buildRow(MaterialColor color) {
+  Widget _buildRow(int rowIndex) {
     List<Widget> row = [];
     Widget widget;
-
     for (int i = 0; i < rowElement; i++) {
       // 非相交点 => 返回正常的box
       if (i != _columnIndex) {
-        widget = Container(
-          decoration: BoxDecoration(
-            // color: color[(i + 1) * 100],
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          margin: EdgeInsets.all(space),
-          width: boxSize,
-          height: boxSize,
-          // color: color[(i + 1) * 100],
-          // TODO: IMAGE
-          child: _buildImage(i + 1),
-        );
+        widget = _buildBox(rowIndex, i);
       } else {
         // 相交点：通过column index判断 => 返回手势检测
         widget = GestureDetector(
           child: Container(
             decoration: BoxDecoration(
-              border: Border.all(color: Colors.black, width: 2),
-              color: color[(i + 1) * 100],
-              // borderRadius: BorderRadiusGeometry
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: Color(0xFF23DFD5), width: 6.0),
             ),
             margin: EdgeInsets.all(space),
             width: boxSize,
             height: boxSize,
-            child: _buildImage(i + 1),
+            child: _buildImage(rowIndex + 1, (i + 1) / 3),
           ),
           onTap: () {
             log('Box selected!');
@@ -272,15 +226,28 @@ class _CrossState extends State<Cross> {
     );
   }
 
-  Widget _buildImage(int index) {
+  Widget _buildBox(int rowIndex, int columnIndex) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      margin: EdgeInsets.all(space),
+      width: boxSize,
+      height: boxSize,
+      child: _buildImage(rowIndex + 1, (columnIndex + 1) / 3),
+    );
+  }
+
+  Widget _buildImage(int rowIndex, double opacity) {
     return Center(
       child: ClipOval(
         child: Image.asset(
-          imageDir + index.toString() + '.jpeg',
-          color: const Color.fromRGBO(23, 158, 151, 1.0),
+          imageDir + rowIndex.toString() + '.jpeg',
+          color: Color.fromRGBO(23, 158, 151, opacity), // #179E97
           colorBlendMode: BlendMode.modulate,
-          height: 70,
-          width: 70,
+          height: imageSize,
+          width: imageSize,
         ),
       ),
     );
