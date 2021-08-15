@@ -3,6 +3,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class Cross extends StatefulWidget {
+  final Function(int index, double opacity) onSelect;
+
+  Cross({required this.onSelect});
+
   @override
   _CrossState createState() => _CrossState();
 }
@@ -23,7 +27,10 @@ class _CrossState extends State<Cross> {
   static const int rowElement = 3;
 
   /// 列高，行宽
+  // 76 * 5 = 380
   static const double columnHeight = fullBoxSize * columnElement;
+
+  // 76 * 3 = 228
   static const double rowWidth = fullBoxSize * rowElement;
 
   /// 行、列的box的坐标
@@ -35,19 +42,18 @@ class _CrossState extends State<Cross> {
 
   @override
   Widget build(BuildContext context) {
-    return  Container(
-        // color: Colors.black87,
-        width: rowWidth,
-        height: columnHeight,
-        // constraints: BoxConstraints.expand(),
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            ..._buildColumnTargets(),
-            ..._buildRowTargets(),
-          ],
-        ),
-
+    return Container(
+      // color: Colors.black87,
+      width: rowWidth,
+      height: columnHeight,
+      // constraints: BoxConstraints.expand(),
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          ..._buildColumnTargets(),
+          ..._buildRowTargets(),
+        ],
+      ),
     );
   }
 
@@ -208,7 +214,7 @@ class _CrossState extends State<Cross> {
           ),
           onTap: () {
             log('Box selected!');
-            setState(() {});
+            this.widget.onSelect(rowIndex + 1, (i + 1) / 3);
           },
         );
       }
