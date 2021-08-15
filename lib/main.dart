@@ -1,4 +1,4 @@
-import 'package:feedback_system/cross.dart';
+import 'package:feedback_system/start_page.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -23,7 +23,8 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: Cross(),
+      home: StartPage(),
+      // home: Cross(),
     );
   }
 }

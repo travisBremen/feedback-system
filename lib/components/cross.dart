@@ -12,7 +12,7 @@ class _CrossState extends State<Cross> {
   static const String imageDir = 'assets/';
 
   /// 元素大小
-  static const double boxSize = 100.0;
+  static const double boxSize = 70.0;
   static const double space = 3.0;
   static const double fullBoxSize = boxSize + space * 2;
 
@@ -35,14 +35,11 @@ class _CrossState extends State<Cross> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Cross'),
-        backgroundColor: Colors.black87,
-      ),
-      body: Container(
-        color: Colors.black87,
-        constraints: BoxConstraints.expand(),
+    return  Container(
+        // color: Colors.black87,
+        width: rowWidth,
+        height: columnHeight,
+        // constraints: BoxConstraints.expand(),
         child: Stack(
           alignment: Alignment.center,
           children: [
@@ -50,7 +47,7 @@ class _CrossState extends State<Cross> {
             ..._buildRowTargets(),
           ],
         ),
-      ),
+
     );
   }
 
@@ -245,7 +242,8 @@ class _CrossState extends State<Cross> {
         child: Image.asset(
           imageDir + rowIndex.toString() + '.jpeg',
           color: Color.fromRGBO(23, 158, 151, opacity), // #179E97
-          colorBlendMode: BlendMode.modulate,
+          // modulate / multiply / darken /src
+          colorBlendMode: BlendMode.multiply,
           height: imageSize,
           width: imageSize,
         ),
