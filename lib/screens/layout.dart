@@ -1,5 +1,6 @@
 import 'package:feedback_system/components/conversation.dart';
 import 'package:feedback_system/components/cross.dart';
+import 'package:feedback_system/screens/end_page.dart';
 import 'package:flutter/material.dart';
 
 class Layout extends StatefulWidget {
@@ -10,7 +11,7 @@ class Layout extends StatefulWidget {
 }
 
 class _LayoutState extends State<Layout> {
-  static const double _iconSize = 60;
+  static const double _iconSize = 50;
   static const double _space = 30;
   static const double _elevation = 30;
 
@@ -18,34 +19,69 @@ class _LayoutState extends State<Layout> {
   bool _hasReplied = false;
   int _index = 1;
   double _opacity = 0;
+  int _pageIndex = 0;
+
+  _lastPage() {
+    if (_pageIndex > 0) {
+      setState(() {
+        _pageIndex--;
+        _isShown = false;
+        _hasReplied = false;
+      });
+    } else {
+      Navigator.pop(context);
+    }
+  }
+
+  _nextPage() {
+    if (_pageIndex < 9) {
+      setState(() {
+        _pageIndex++;
+        _isShown = false;
+        _hasReplied = false;
+      });
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => EndPage()),
+      );
+    }
+  }
+
+  _sendFeedback(int index, double opacity) {
+    setState(() {
+      _hasReplied = true;
+      _index = index;
+      _opacity = opacity;
+    });
+  }
+
+  _showFeedback() {
+    setState(() {
+      _isShown = !_isShown;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Container(
-          // constraints: BoxConstraints.tightFor(width: 1600, height: 900),
-          // width: MediaQuery.of(context).size.width,
-          // height: MediaQuery.of(context).size.height,
-          padding: EdgeInsets.symmetric(vertical: 20, horizontal: 200),
-          // child: Center(
-          //   child: Container(
-          // width: 800,
-          // decoration: BoxDecoration(
-          //   borderRadius: BorderRadius.circular(20),
-          //   border: Border.all(width: 10),
-          // ),
-          // ACTUAL CONTENT!
-          child: Row(
-            children: [
-              _buildLeftBar(),
-              _buildChat(),
-            ],
+        child: Center(
+          child: Container(
+            width: 1280,
+            height: 720,
+            // ACTUAL CONTENT!
+            child: Row(
+              children: [
+                _buildLeftBar(),
+                _buildChat(),
+              ],
+            ),
           ),
-          //   ),
-          // ),
         ),
       ),
+      floatingActionButton: _buildFloatingButtons(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 
@@ -75,10 +111,15 @@ class _LayoutState extends State<Layout> {
   }
 
   Widget _buildTextField() {
-    return Conversation(
-      hasReplied: _hasReplied,
-      index: _index,
-      opacity: _opacity,
+    return Container(
+      width: 600,
+      // color: Colors.black87,
+      child: Conversation(
+        pageIndex: _pageIndex,
+        hasReplied: _hasReplied,
+        index: _index,
+        opacity: _opacity,
+      ),
     );
   }
 
@@ -99,20 +140,6 @@ class _LayoutState extends State<Layout> {
         ],
       ),
     );
-  }
-
-  _sendFeedback(int index, double opacity) {
-    setState(() {
-      _hasReplied = true;
-      _index = index;
-      _opacity = opacity;
-    });
-  }
-
-  _showFeedback() {
-    setState(() {
-      _isShown = !_isShown;
-    });
   }
 
   Widget _buildInputField() {
@@ -201,6 +228,31 @@ class _LayoutState extends State<Layout> {
         shape: CircleBorder(),
         onPressed: () {},
         elevation: _elevation,
+      ),
+    );
+  }
+
+  Widget _buildFloatingButtons() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 100, horizontal: 50),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          FloatingActionButton(
+            heroTag: null,
+            onPressed: _lastPage,
+            child: Icon(
+              Icons.navigate_before,
+            ),
+          ),
+          FloatingActionButton(
+            heroTag: null,
+            onPressed: _nextPage,
+            child: Icon(
+              Icons.navigate_next,
+            ),
+          ),
+        ],
       ),
     );
   }

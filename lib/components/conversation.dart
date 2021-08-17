@@ -1,31 +1,50 @@
+import 'package:feedback_system/model/conversationText.dart';
+import 'package:feedback_system/model/utils.dart';
 import 'package:flutter/material.dart';
 
 class Conversation extends StatelessWidget {
+  final int pageIndex;
   final bool hasReplied;
   final int index;
   final double opacity;
 
   Conversation(
-      {required this.hasReplied, required this.index, required this.opacity});
+      {Key? key,
+      required this.pageIndex,
+      required this.hasReplied,
+      required this.index,
+      required this.opacity})
+      : super(key: key);
 
   static const double height = 30.0;
 
   @override
   Widget build(BuildContext context) {
+    List<ConversationText> conversationText = createText();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(height: height),
         Text(
-          'David: You know what? I just passed the exam with a 1.0!',
+          conversationText[pageIndex].string1,
           style: _textStyle(),
         ),
         SizedBox(height: height),
         Text(
-          'Eva: Wow, congrats!',
+          conversationText[pageIndex].string2,
           style: _textStyle(),
         ),
         SizedBox(height: height),
+        conversationText[pageIndex].string3 == 'null'
+            ? Container()
+            : Text(
+                conversationText[pageIndex].string3,
+                style: _textStyle(),
+              ),
+        conversationText[pageIndex].string3 == 'null'
+            ? Container()
+            : SizedBox(height: height),
         _buildResponse(index, opacity),
       ],
     );
@@ -35,7 +54,6 @@ class Conversation extends StatelessWidget {
     return Visibility(
       visible: hasReplied,
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Text('Me: ', style: _textStyle()),
           ClipOval(

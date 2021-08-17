@@ -1,4 +1,4 @@
-import 'package:feedback_system/start_page.dart';
+import 'package:feedback_system/screens/start_page.dart';
 import 'package:flutter/material.dart';
 
 void main() {
