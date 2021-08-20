@@ -234,7 +234,7 @@ class _LayoutState extends State<Layout> {
 
   Widget _buildFloatingButtons() {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 100, horizontal: 50),
+      padding: const EdgeInsets.symmetric(vertical: 120, horizontal: 10),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
