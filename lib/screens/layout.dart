@@ -16,9 +16,12 @@ class _LayoutState extends State<Layout> {
   static const double _elevation = 30;
 
   bool _isShown = false;
+  bool _isShown1 = false;
+  bool _isShown2 = false;
   bool _hasReplied = false;
-  int _index = 1;
-  double _opacity = 0;
+  List<bool> _hasReacted = [false, false, false];
+  List<int> _index = [1, 1, 1];
+  List<double> _opacity = [0, 0, 0];
   int _pageIndex = 0;
 
   _lastPage() {
@@ -26,7 +29,10 @@ class _LayoutState extends State<Layout> {
       setState(() {
         _pageIndex--;
         _isShown = false;
+        _isShown1 = false;
+        _isShown2 = false;
         _hasReplied = false;
+        _hasReacted = [false, false, false];
       });
     } else {
       Navigator.pop(context);
@@ -38,7 +44,10 @@ class _LayoutState extends State<Layout> {
       setState(() {
         _pageIndex++;
         _isShown = false;
+        _isShown1 = false;
+        _isShown2 = false;
         _hasReplied = false;
+        _hasReacted = [false, false, false];
       });
     } else {
       Navigator.push(
@@ -50,15 +59,52 @@ class _LayoutState extends State<Layout> {
 
   _sendFeedback(int index, double opacity) {
     setState(() {
+      _hasReacted[0] = true;
       _hasReplied = true;
-      _index = index;
-      _opacity = opacity;
+      _index[0] = index;
+      _opacity[0] = opacity;
+    });
+  }
+
+  _sendFeedback1(int index, double opacity) {
+    setState(() {
+      _hasReacted[1] = true;
+      _hasReplied = true;
+      _index[1] = index;
+      _opacity[1] = opacity;
+    });
+  }
+
+  _sendFeedback2(int index, double opacity) {
+    setState(() {
+      _hasReacted[2] = true;
+      _hasReplied = true;
+      _index[2] = index;
+      _opacity[2] = opacity;
     });
   }
 
   _showFeedback() {
     setState(() {
       _isShown = !_isShown;
+      _isShown1 = false;
+      _isShown2 = false;
+    });
+  }
+
+  _showFeedback1() {
+    setState(() {
+      _isShown1 = !_isShown1;
+      _isShown = false;
+      _isShown2 = false;
+    });
+  }
+
+  _showFeedback2() {
+    setState(() {
+      _isShown2 = !_isShown2;
+      _isShown = false;
+      _isShown1 = false;
     });
   }
 
@@ -119,11 +165,53 @@ class _LayoutState extends State<Layout> {
         hasReplied: _hasReplied,
         index: _index,
         opacity: _opacity,
+        showFeedback: _showFeedback,
+        showFeedback1: _showFeedback1,
+        showFeedback2: _showFeedback2,
+        hasReacted: _hasReacted,
       ),
     );
   }
 
   Widget _buildFeedbackSystem() {
+    if (_isShown) {
+      return Container(
+        width: 228,
+        // height: 380,
+        // color: Colors.black87,
+        child: Column(
+          children: [
+            SizedBox(height: 100),
+            Visibility(
+              visible: _isShown,
+              child: Cross(
+                onSelect: _sendFeedback,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (_isShown1) {
+      return Container(
+        width: 228,
+        // height: 380,
+        // color: Colors.black87,
+        child: Column(
+          children: [
+            SizedBox(height: 100),
+            Visibility(
+              visible: _isShown1,
+              child: Cross(
+                onSelect: _sendFeedback1,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
     return Container(
       width: 228,
       // height: 380,
@@ -132,9 +220,9 @@ class _LayoutState extends State<Layout> {
         children: [
           SizedBox(height: 100),
           Visibility(
-            visible: _isShown,
+            visible: _isShown2,
             child: Cross(
-              onSelect: _sendFeedback,
+              onSelect: _sendFeedback2,
             ),
           ),
         ],
