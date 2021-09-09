@@ -13,7 +13,7 @@ class Cross extends StatefulWidget {
 
 class _CrossState extends State<Cross> {
   /// 图片路径
-  static const String imageDir = 'assets/';
+  static const String imageDir = 'assets/cross/';
 
   /// 元素大小
   static const double boxSize = 70.0;
@@ -205,7 +205,7 @@ class _CrossState extends State<Cross> {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: Color(0xFF23DFD5), width: 6.0),
+              border: Border.all(color: Color(0xFF179E97), width: 6.0),
             ),
             margin: EdgeInsets.all(space),
             width: boxSize,
