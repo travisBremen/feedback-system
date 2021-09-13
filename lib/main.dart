@@ -1,5 +1,3 @@
-import 'package:feedback_system/circular_layout.dart';
-import 'package:feedback_system/components/circle.dart';
 import 'package:feedback_system/screens/start_page.dart';
 import 'package:flutter/material.dart';
 
@@ -25,9 +23,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: Circle(),
-      // home: StartPage(),
-      // home: Cross(),
+      home: StartPage(),
     );
   }
 }

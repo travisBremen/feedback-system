@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'dart:math' as Math;
@@ -10,6 +9,10 @@ final double _startAngle = -90.0 * _radiansPerDegree;
 typedef double ItemAngleCalculator(int index);
 
 class Circle extends StatefulWidget {
+  final Function(int index, double opacity) onSelect;
+
+  Circle({required this.onSelect});
+
   @override
   _CircleState createState() => _CircleState();
 }
@@ -17,7 +20,7 @@ class Circle extends StatefulWidget {
 // TODO RING
 class _CircleState extends State<Circle> {
   /// 图片路径
-  static const String imageDir = 'assets/cross/';
+  static const String imageDir = 'assets/';
   static const String imageFormat = '.jpeg';
 
   int selectedIndex = -1;
@@ -37,10 +40,10 @@ class _CircleState extends State<Circle> {
   Widget _buildBody() {
     return Container(
       // height: 400,
-      decoration: new BoxDecoration(color: Colors.grey),
-      // width: MediaQuery.of(context).size.width,
+      // width: 300,
+      color: Color.fromRGBO(54, 52, 53, 1.0),
       child: Padding(
-        padding: const EdgeInsets.all(25.0),
+        padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
@@ -54,19 +57,22 @@ class _CircleState extends State<Circle> {
 
   Widget _buildSlider() {
     return Container(
-      width: 200,
-      child: Slider(
-        value: _currentSliderValue,
-        min: 1,
-        max: 3,
-        divisions: 2,
-        label: _currentSliderValue.toString(),
-        activeColor: Color(0xFF179E97),
-        onChanged: (double value) {
-          setState(() {
-            _currentSliderValue = value;
-          });
-        },
+      width: 160,
+      child: Visibility(
+        visible: _hasSelected,
+        child: Slider(
+          value: _currentSliderValue,
+          min: 1,
+          max: 3,
+          divisions: 2,
+          label: _currentSliderValue.toString(),
+          activeColor: Color(0xFF179E97),
+          onChanged: (double value) {
+            setState(() {
+              _currentSliderValue = value;
+            });
+          },
+        ),
       ),
     );
   }
@@ -75,58 +81,58 @@ class _CircleState extends State<Circle> {
     final List<Widget> items = <Widget>[];
     final List<Widget> icons = _buildIcons();
 
-    double width = 300;
-    double height = 300;
-    // double outerRadius = Math.min(width * 3 / 4, height * 3 / 4);
     double outerRadius = 200;
-    double innerWhiteRadius = outerRadius * 3 / 4;
+    // double innerWhiteRadius = outerRadius * 3 / 4;
+    double innerWhiteRadius = 170;
 
     for (int i = 0; i < itemCount; i++) {
       items.add(_buildItems(i));
     }
 
-    return Flexible(
-      child: Container(
-        padding: EdgeInsets.all(10.0),
-        child: new Stack(
-          alignment: AlignmentDirectional.center,
-          children: <Widget>[
-            _drawCircle(outerRadius + 35, Color.fromRGBO(255, 255, 255, 1.0)),
-            Visibility(
-              visible: _hasSelected,
-              child: GestureDetector(
-                onTap: () {
-                  log('Box ' + itemIndex.toString() + ' selected!');
-                },
-                child: ClipOval(
-                  child: Image.asset(
-                    imageDir + itemIndex.toString() + imageFormat,
-                    color: Color.fromRGBO(
-                        23, 158, 151, _currentSliderValue / 3),
-                    colorBlendMode: BlendMode.multiply,
-                    width: innerWhiteRadius,
-                    height: innerWhiteRadius,
-                    fit: BoxFit.cover,
-                  ),
+    return Container(
+      width: 400,
+      height: 300,
+      // padding: EdgeInsets.all(10.0),
+      child: new Stack(
+        alignment: AlignmentDirectional.center,
+        children: <Widget>[
+          Visibility(
+            visible: _hasSelected,
+            child: GestureDetector(
+              onTap: () {
+                log('Box ' + itemIndex.toString() + ' selected!');
+                this.widget.onSelect(itemIndex, _currentSliderValue / 3);
+              },
+              child: ClipOval(
+                child: Image.asset(
+                  imageDir + itemIndex.toString() + imageFormat,
+                  color: Color.fromRGBO(23, 158, 151, _currentSliderValue / 3),
+                  colorBlendMode: BlendMode.multiply,
+                  width: innerWhiteRadius,
+                  height: innerWhiteRadius,
+                  fit: BoxFit.cover,
                 ),
               ),
             ),
-            CustomMultiChildLayout(
+          ),
+          Container(
+            height: 500,
+            child: CustomMultiChildLayout(
               delegate: new _CircularLayoutDelegate(
                 itemCount: itemCount,
                 radius: outerRadius / 2.16,
               ),
               children: items,
             ),
-            CustomMultiChildLayout(
-              delegate: _CircularOuterLayoutDelegate(
-                itemCount: itemCount,
-                radius: outerRadius / 1.3,
-              ),
-              children: icons,
+          ),
+          CustomMultiChildLayout(
+            delegate: _CircularOuterLayoutDelegate(
+              itemCount: itemCount,
+              radius: outerRadius / 1.35,
             ),
-          ],
-        ),
+            children: icons,
+          ),
+        ],
       ),
     );
   }

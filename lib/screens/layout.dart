@@ -1,3 +1,4 @@
+import 'package:feedback_system/components/circle.dart';
 import 'package:feedback_system/components/conversation.dart';
 import 'package:feedback_system/components/cross.dart';
 import 'package:feedback_system/screens/end_page.dart';
@@ -125,16 +126,19 @@ class _LayoutState extends State<Layout> {
 
   Widget _buildFeedbackSystem() {
     return Container(
-      width: 228,
+      // width: 228,
       // height: 380,
       // color: Colors.black87,
       child: Column(
         children: [
           SizedBox(height: 100),
-          Visibility(
-            visible: _isShown,
-            child: Cross(
-              onSelect: _sendFeedback,
+          Container(
+            width: 360,
+            height: 400,
+            child: Visibility(
+              visible: _isShown,
+              // child: Cross(onSelect: _sendFeedback),
+              child: Circle(onSelect: _sendFeedback,),
             ),
           ),
         ],
